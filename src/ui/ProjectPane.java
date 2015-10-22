@@ -110,6 +110,7 @@ public class ProjectPane extends JPanel{
 					int rows = audioListTable.getRowCount();
 					ac.mergeAudioToExport(rows, audioListTable);
 					ac.mergeVideo();
+					System.out.println("HI");
 				}
 			}
 		});
