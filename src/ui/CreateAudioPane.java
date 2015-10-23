@@ -125,17 +125,27 @@ public class CreateAudioPane extends JPanel{
 		
 		JPanel eastButtons = new JPanel();
 		eastButtons.setLayout(new GridLayout(4, 1, 2, 3));
-		String[] voiceList = { "voice1", "voice2", "voice3" };
-		JComboBox voices = new JComboBox(voiceList);
-		String[] speedList = { "1x", "1.5x", "2x" };
-		JComboBox speed = new JComboBox(speedList);
-		String[] pitchList = { "freq1", "freq2", "freq3" }; 
-		JComboBox pitch = new JComboBox(pitchList);
+		String[] voiceList = { "KAL", "RAB", "DON" };
+		final JComboBox<Object> voices = new JComboBox<Object>(voiceList);
+		String[] pitchList = { "90Hz", "105Hz", "130Hz", "180Hz" }; 
+		final JComboBox<Object> pitch = new JComboBox<Object>(pitchList);
+		pitch.setSelectedIndex(1);
+		String[] speedList = { "0.5x", "0.75x", "1.0x", "1.2x" };
+		final JComboBox<Object> speed = new JComboBox<Object>(speedList);
+		speed.setSelectedIndex(2);
 		JButton defaultBtn = new JButton("Default");
+		defaultBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				voices.setSelectedIndex(0);
+				pitch.setSelectedIndex(1);
+				speed.setSelectedIndex(2);
+			}
+		});
 		
 		eastButtons.add(voices);
-		eastButtons.add(speed);
 		eastButtons.add(pitch);
+		eastButtons.add(speed);
 		eastButtons.add(defaultBtn);
 		
 		centreFunctions.add(heading, BorderLayout.NORTH);

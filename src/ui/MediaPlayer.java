@@ -14,8 +14,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -43,14 +45,16 @@ public class MediaPlayer extends JFrame{
 	
 	private JPanel mainPanel;
 	private JPanel controlPanel;
-	private JPanel soundPanel;
+	private JPanel eastVidControlsPanel;
 	private ProjectPane projectPane;
 	private JTabbedPane audioTabPane;
 	private JButton playButton;
+	private JButton hideBtn;
 	
 	private String projectPath;
 	private String videoPath;
 	private String currentVideo;
+	private boolean isHidden = false;
 
 	
 	
@@ -64,6 +68,7 @@ public class MediaPlayer extends JFrame{
 		getRootPane().setBorder(BorderFactory.createMatteBorder(0, 3, 0, 3, Color.WHITE));
 		
 		mainFrame = this;
+		mainFrame.setResizable(false);
 		progress = new ProgressSlider(this);
 		menuBar = new Menu(this);
 		this.projectPath = projectPath;
@@ -100,12 +105,10 @@ public class MediaPlayer extends JFrame{
 	protected void mainFrameWindowStateChanged(WindowEvent e) {
 		//minimized
 		if ((e.getNewState() & mainFrame.MAXIMIZED_BOTH) == mainFrame.MAXIMIZED_BOTH) {
-			audioTabPane.setVisible(false);
-			projectPane.setVisible(false);
+			hideBtn.setEnabled(false);
 		}
 		else {
-			audioTabPane.setVisible(true);
-			projectPane.setVisible(true);
+			hideBtn.setEnabled(true);
 		}
 	}
 
@@ -122,13 +125,12 @@ public class MediaPlayer extends JFrame{
 				mainFrame.attachMainPanel();
 				mainFrame.attachSelectVidPane();
 				mainFrame.constructControlPanel();
-				mainFrame.constructVolumeControls();
+				mainFrame.eastVideoControls();
 				mainFrame.constructAudioPanels();
 				mainFrame.attachSouthPanels();
 				mainFrame.attachProjectPane();
 				mainFrame.attachMediaPanel();
 				mainFrame.setVisible(true);
-				mainFrame.pack();
 			}
 		});
 
@@ -208,7 +210,7 @@ public class MediaPlayer extends JFrame{
 	}
 	
 	//Volume control
-	public void constructVolumeControls() {
+	public void eastVideoControls() {
 
 		JLabel volumeLabel = new JLabel("Volume:");
 		final JSlider soundCtrl = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
@@ -238,17 +240,44 @@ public class MediaPlayer extends JFrame{
 			}
 		});
 		
-		soundPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-		soundPanel.add(volumeLabel);
-		soundPanel.add(soundCtrl);
-		soundPanel.add(muteBtn);
+		hideBtn = new JButton("Hide");
+		hideBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!isHidden) {
+					audioTabPane.setVisible(false);
+					projectPane.setVisible(false);
+					mainFrame.setResizable(true);
+					isHidden = true;
+					hideBtn.setText("Show");
+				}
+				else {
+					audioTabPane.setVisible(true);
+					projectPane.setVisible(true);
+					mainFrame.setResizable(false);
+					isHidden = false;
+					hideBtn.setText("Hide");
+				}
+			}
+		});
+		
+		JSeparator separator= new JSeparator(SwingConstants.VERTICAL);
+		Dimension d = separator.getPreferredSize();
+		d.height = hideBtn.getPreferredSize().height;
+		separator.setPreferredSize(d);
+		
+		eastVidControlsPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		eastVidControlsPanel.add(volumeLabel);
+		eastVidControlsPanel.add(soundCtrl);
+		eastVidControlsPanel.add(muteBtn);
+		eastVidControlsPanel.add(separator);
+		eastVidControlsPanel.add(hideBtn);
 	}
 	
 	//mp3 creation + add audio tabbed pane panel
 	//create south panel, this goes south of south panel
 	public void constructAudioPanels() {
 		audioTabPane = new JTabbedPane();
-		
 		audioTabPane.add("Create Audio", new CreateAudioPane(projectPath, ac));
 		audioTabPane.add("Add Audio", new AddAudioPane(projectPath, ac));
 	}
@@ -258,7 +287,7 @@ public class MediaPlayer extends JFrame{
 		southPanel.setLayout(new BorderLayout());
 		
 		southPanel.add(controlPanel, BorderLayout.WEST);
-		southPanel.add(soundPanel, BorderLayout.EAST);
+		southPanel.add(eastVidControlsPanel, BorderLayout.EAST);
 		southPanel.add(audioTabPane, BorderLayout.SOUTH);
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
 	}
