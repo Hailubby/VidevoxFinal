@@ -290,7 +290,7 @@ public class MediaPlayer extends JFrame{
 	public void constructAudioPanels() {
 		audioTabPane = new JTabbedPane();
 		audioTabPane.add("Create Audio", new CreateAudioPane(projectPath, ac));
-		audioTabPane.add("Add Audio", new AddAudioPane(projectPath, ac));
+		audioTabPane.add("Add Audio", new AddAudioPane(projectPath, ac, vidOption, mainFrame));
 	}
 	
 	public void attachSouthPanels() {
@@ -367,5 +367,8 @@ public class MediaPlayer extends JFrame{
 		playButton.setText("Pause");
 	}
 	
+	public EmbeddedMediaPlayer getVideoPlayer() {
+		return video;
+	}
 
 }

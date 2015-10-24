@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import audio.AudioConverter;
 import audio.AudioConverterListener;
 import audio.AudioPlayer;
+import ui.utils.VideoOptions;
 
 public class AddAudioPane extends JPanel{
 	
@@ -37,14 +38,17 @@ public class AddAudioPane extends JPanel{
 	private JTextField audTxt;
 	private String filePath;
 	private AudioPlayer audioPlayer = new AudioPlayer();
-	private int hour;
 	private int min;
 	private int sec;
+	private VideoOptions vidOption;
+	private MediaPlayer mainFrame;
 	private AudioConverter ac;
 	
 	
-	AddAudioPane(String projectPath, final AudioConverter ac) {
+	AddAudioPane(String projectPath, final AudioConverter ac, VideoOptions vidOption, MediaPlayer mainFrame) {
 		this.ac = ac;
+		this.vidOption = vidOption;
+		this.mainFrame = mainFrame;
 		
 		setLayout(new BorderLayout());
 		
@@ -159,25 +163,28 @@ public class AddAudioPane extends JPanel{
 		JPanel timePanel = new JPanel(); 
 		timePanel.setLayout(new BoxLayout(timePanel, BoxLayout.X_AXIS));
 		JLabel strtLbl = new JLabel ("Start Time");
-		final JTextField hours = new JTextField("00", JTextField.CENTER);
-		hours.setPreferredSize(new Dimension(10, 25));
 		final JTextField minutes = new JTextField("00", JTextField.CENTER);
-		minutes.setPreferredSize(new Dimension(10,25));
+		minutes.setPreferredSize(new Dimension(7,25));
 		final JTextField seconds = new JTextField("00", JTextField.CENTER);
-		seconds.setPreferredSize(new Dimension(10,25));
+		seconds.setPreferredSize(new Dimension(7,25));
 		JLabel separator1 = new JLabel(":");
-		JLabel separator2 = new JLabel(":");
 		JButton curTimeBtn = new JButton("Current Time");
+		curTimeBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String[] currentTime = getCurrentTime().split(":");
+				minutes.setText(currentTime[0]);
+				seconds.setText(currentTime[1]);
+			}
+		});
 		
 		timePanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		timePanel.add(strtLbl);
 		timePanel.add(Box.createRigidArea(new Dimension(5,0)));
-		timePanel.add(hours);
-		timePanel.add(separator1);
 		timePanel.add(minutes);
-		timePanel.add(separator2);
+		timePanel.add(separator1);
 		timePanel.add(seconds);
-		timePanel.add(Box.createRigidArea(new Dimension(175, 0)));
+		timePanel.add(Box.createRigidArea(new Dimension(200, 0)));
 		timePanel.add(curTimeBtn);
 		timePanel.add(Box.createRigidArea(new Dimension(4, 0)));
 		
@@ -226,7 +233,6 @@ public class AddAudioPane extends JPanel{
 		addBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				hour = Integer.parseInt(hours.getText());
 				min = Integer.parseInt(minutes.getText());
 				sec = Integer.parseInt(seconds.getText());
 				
@@ -235,12 +241,11 @@ public class AddAudioPane extends JPanel{
 				
 				double v = ((double)volume)/50;
 				
-				if((hour == 0) && (min == 0) && (sec == 0)) {
+				if((min == 0) && (sec == 0)) {
 					//create new audio file with selected volumed
 					ac.progAudioNoDelay(filePath, v);
 				}
 				else {
-					totalMilliSeconds += TimeUnit.HOURS.toMillis((long)hour);
 					totalMilliSeconds += TimeUnit.MINUTES.toMillis((long)min);
 					totalMilliSeconds += TimeUnit.SECONDS.toMillis((long)sec);
 					
@@ -262,6 +267,10 @@ public class AddAudioPane extends JPanel{
 		add(new JSeparator(SwingConstants.VERTICAL), BorderLayout.CENTER);
 		add(eastPanel, BorderLayout.EAST);
 		
+	}
+	
+	private String getCurrentTime() {
+		return vidOption.timeOfVid(mainFrame.getVideoPlayer().getTime());
 	}
 
 
