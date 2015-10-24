@@ -24,6 +24,8 @@ public class ProjectPane extends JPanel{
 	private String filePath;
 	private Object key;
 	private Boolean isAllSelected = false;
+	private JTable audioListTable;
+	private ProjectTableModel tableModel;
 	
 	ProjectPane(String projectPath, final AudioConverter ac) {
 		this.ac = ac;
@@ -34,8 +36,8 @@ public class ProjectPane extends JPanel{
 		
 		JPanel tblPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		
-		final JTable audioListTable = new JTable();
-		final ProjectTableModel tableModel = new ProjectTableModel(ac.getAddedAudioMap());
+		audioListTable = new JTable();
+		tableModel = new ProjectTableModel(ac.getAddedAudioMap());
 		audioListTable.setModel(tableModel);
 		final ListSelectionModel cellSelectionModel = audioListTable.getSelectionModel();
 		cellSelectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -76,7 +78,7 @@ public class ProjectPane extends JPanel{
 		JPanel btnPane3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		final JButton previewBtn = new JButton("Preview");
-		previewBtn.setPreferredSize(new Dimension(175, 25));
+		previewBtn.setPreferredSize(new Dimension(85, 25));
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -84,18 +86,18 @@ public class ProjectPane extends JPanel{
 			}
 		});
 		
-//		JButton selectAllBtn = new JButton("Select All");
-//		selectAllBtn.setPreferredSize(new Dimension(85, 25));
-//		selectAllBtn.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				isAllSelected = true;
-//				audioListTable.selectAll();
-//				previewBtn.setEnabled(false);
-//			}
-//		});
+		JButton selectAllBtn = new JButton("Select All");
+		selectAllBtn.setPreferredSize(new Dimension(85, 25));
+		selectAllBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				isAllSelected = true;
+				audioListTable.selectAll();
+				previewBtn.setEnabled(false);
+			}
+		});
 		btnPane1.add(previewBtn);
-//		btnPane1.add(selectAllBtn);
+		btnPane1.add(selectAllBtn);
 		
 		JButton dltBtn = new JButton("Delete");
 		dltBtn.setPreferredSize(new Dimension(175, 25));
@@ -103,9 +105,13 @@ public class ProjectPane extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (audioListTable.getRowCount() > 0) {
-					tableModel.removeAudio(key.toString());
-					ac.removeAudioFile(filePath);
-					tableModel.refresh();
+					if (isAllSelected) {
+						rmvAllTableContent();
+					} else {
+						tableModel.removeAudio(key.toString());
+						ac.removeAudioFile(filePath);
+						tableModel.refresh();
+					}
 				}
 			}
 		});
@@ -121,6 +127,7 @@ public class ProjectPane extends JPanel{
 					int rows = audioListTable.getRowCount();
 					ac.mergeAudioToExport(rows, audioListTable);
 					ac.mergeVideo();
+					rmvAllTableContent();
 				}
 			}
 		});
@@ -135,6 +142,16 @@ public class ProjectPane extends JPanel{
 		add(tblPane, BorderLayout.CENTER);
 		add(btnPanel, BorderLayout.SOUTH);
 
+	}
+	
+	private void rmvAllTableContent() {
+		for (int i = audioListTable.getRowCount() - 1; i >=0; i--) {
+			key = audioListTable.getValueAt(0, 0);
+			filePath = tableModel.getFilePath(key.toString());
+			tableModel.removeAudio(key.toString());
+			ac.removeAudioFile(filePath);
+			tableModel.refresh();
+		}
 	}
 
 }

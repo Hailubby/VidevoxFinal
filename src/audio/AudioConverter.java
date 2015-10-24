@@ -40,7 +40,6 @@ public class AudioConverter {
 		setFestivalOptions(voice, pitch, speed);
 		// Used to read out input text using festival
 		String cmd = "echo \"" + setVoice + " " + setPitch +" " + setPitchMethod + " " + setSpeed + " " + textToSay + " | festival";
-		System.out.println("" + cmd);
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
 			p = builder.start();
@@ -203,7 +202,6 @@ public class AudioConverter {
 	}
 	
 	public void removeAudioFile(String filePath) {
-		System.out.println(""+filePath);
 		String cmd = "rm " + filePath;
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
@@ -291,6 +289,10 @@ public class AudioConverter {
 		try {
 			Process process = builder.start();
 			process.waitFor();
+			
+			cmd = "rm " + projectPath+"/Videos/temp.mp3";
+			builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			builder.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -299,7 +301,7 @@ public class AudioConverter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public HashMap<String, AddedAudio> getAddedAudioMap() {
 		return addedAudioMap;
 	}
