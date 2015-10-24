@@ -2,6 +2,7 @@ package ui.utils;
 
 import javax.swing.JSlider;
 
+import audio.AudioPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class VideoOptions {
@@ -9,8 +10,13 @@ public class VideoOptions {
 	private RewindSession rewinding;
 	private Boolean isPlaying = false;
 	private Boolean isVideo = false;
+	private Boolean previewIsFinished = true;
 	private EmbeddedMediaPlayer video;
 	
+	public VideoOptions (EmbeddedMediaPlayer video) {
+		this.video = video;
+	}
+
 	public void playNewVideo(String newvideo, EmbeddedMediaPlayer video, String currentVideo, ProgressSlider progress) {
 		
 		this.video = video;
@@ -29,7 +35,7 @@ public class VideoOptions {
 		progress.setLength();
 	}
 	
-	public void playBtnFuntionality(EmbeddedMediaPlayer video) {
+	public void playBtnFuntionality() {
 		//Disable rewinds in progress
 		if (rewinding != null) {
 			rewinding.cancel(true);
@@ -44,10 +50,10 @@ public class VideoOptions {
 			isPlaying = true;
 			//set pause
 			
-			//Ensure the video is unmuted
-			if (video.isMute()) {
-				video.mute();
-			}
+//			//Ensure the video is unmuted
+//			if (video.isMute()) {
+//				video.mute();
+//			}
 
 			// Pause if playing normally
 		} else {
@@ -60,7 +66,7 @@ public class VideoOptions {
 		}
 	}
 	
-	public void rewindBtnFunctionality(EmbeddedMediaPlayer video) {
+	public void rewindBtnFunctionality() {
 		// Increase rewind if pressed again
 		if (rewinding != null) {
 			rewinding.increaseRate();
@@ -77,7 +83,7 @@ public class VideoOptions {
 		rewinding.execute();
 	}
 	
-	public void forwardBtnFunctionality(EmbeddedMediaPlayer video) {
+	public void forwardBtnFunctionality() {
 		// Mute the video
 		if (!video.isMute()) {
 			video.mute();
@@ -98,22 +104,50 @@ public class VideoOptions {
 		isPlaying = false;
 	}
 	
-	public void stopBtnFunctionality(EmbeddedMediaPlayer video) {
+	public void stopBtnFunctionality() {
 		video.stop();
 		isPlaying = false;
 	}
 	
-	public boolean muteBtnFunctionality(EmbeddedMediaPlayer video) {
+	public boolean muteBtnFunctionality() {
 		video.mute();
 		return video.isMute();
+	}
+	
+	public String timeOfVid(long length) {
+		String videoTime = "";
+		length = length/1000; //ms to seconds
+		int minutes = (int) (length/60);
+		int seconds = (int) (length %60);
+		if (minutes - 10 < 0) {
+			videoTime += "0";
+		}
+		videoTime += minutes + ":";
+		if (seconds - 10 < 0) {
+			videoTime += "0";
+		}
+		videoTime += seconds;
+		return videoTime;
 	}
 	
 	public Boolean getIsPlaying() {
 		return isPlaying;
 	}
 	
+	public void setIsPlaying(Boolean b) {
+		isPlaying = b;
+	}
+	
 	public Boolean getIsVideo() {
 		return isVideo;
+	}
+	
+	public void setPreviewIsFinished(Boolean b) {
+		previewIsFinished = b;
+	}
+	
+	public Boolean getPreviewIsFinished() {
+		return previewIsFinished;
 	}
 
 	public void volCtrlFuntionality(EmbeddedMediaPlayer video, JSlider soundCtrl) {

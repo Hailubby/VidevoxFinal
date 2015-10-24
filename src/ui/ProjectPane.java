@@ -17,6 +17,8 @@ import javax.swing.event.ListSelectionListener;
 
 import audio.AudioConverter;
 import audio.AudioConverterListener;
+import audio.AudioPlayer;
+import ui.utils.VideoOptions;
 
 public class ProjectPane extends JPanel{
 	
@@ -26,8 +28,9 @@ public class ProjectPane extends JPanel{
 	private Boolean isAllSelected = false;
 	private JTable audioListTable;
 	private ProjectTableModel tableModel;
+	private AudioPlayer previewPlayer = new AudioPlayer();
 	
-	ProjectPane(String projectPath, final AudioConverter ac) {
+	ProjectPane(String projectPath, final AudioConverter ac, final VideoOptions vidOption, final MediaPlayer mainFrame) {
 		this.ac = ac;
 		
 		setLayout(new BorderLayout());
@@ -82,7 +85,12 @@ public class ProjectPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//new audio player to play at same time as video.
+				previewPlayer.stop();
+				previewPlayer = new AudioPlayer(filePath, vidOption);
+				vidOption.setPreviewIsFinished(false);
+				vidOption.stopBtnFunctionality();
+				vidOption.playBtnFuntionality();
+				mainFrame.setPlayButton();
 			}
 		});
 		
@@ -152,6 +160,22 @@ public class ProjectPane extends JPanel{
 			ac.removeAudioFile(filePath);
 			tableModel.refresh();
 		}
+	}
+	
+	public void playPreview() {
+		previewPlayer.play();
+	}
+	
+	public void pausePreview() {
+		previewPlayer.pause();
+	}
+	
+	public void stopPreview() {
+		previewPlayer.stop();
+	}
+	
+	public AudioPlayer getPreviewPlayer() {
+		return previewPlayer;
 	}
 
 }

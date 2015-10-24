@@ -26,7 +26,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import audio.AddedAudio;
 import audio.AudioConverter;
 import audio.AudioConverterListener;
 import audio.AudioPlayer;
@@ -195,10 +194,15 @@ public class AddAudioPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				volume = soundCtrl.getValue();
-				audioPlayer.pause();
-				audioPlayer = new AudioPlayer(filePath, volume);
-				System.out.println(filePath);
+				volume = soundCtrl.getValue();
+				audioPlayer.stop();
+				audioPlayer = new AudioPlayer(filePath);
+				try {
+					Thread.sleep(100);
+					audioPlayer.setVolume(soundCtrl.getValue());
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		

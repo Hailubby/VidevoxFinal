@@ -27,10 +27,6 @@ public class ProgressSlider extends JSlider {
 				if (playing) {
 					return;
 				}
-//				if(!frame.checkIfVideo(false)){
-//					thisSlider.setValue(0);
-//					return;
-//				}
 				
 				float position = thisSlider.getValue();
 				

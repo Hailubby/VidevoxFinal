@@ -31,6 +31,7 @@ import ui.utils.ProgressSlider;
 import ui.utils.VideoOptions;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -40,7 +41,7 @@ public class MediaPlayer extends JFrame{
 	private EmbeddedMediaPlayer video;
 	private ProgressSlider progress;
 	private Menu menuBar;
-	private VideoOptions vidOption = new VideoOptions();
+	private VideoOptions vidOption;
 	private AudioConverter ac;
 	
 	private JPanel mainPanel;
@@ -50,13 +51,14 @@ public class MediaPlayer extends JFrame{
 	private JTabbedPane audioTabPane;
 	private JButton playButton;
 	private JButton hideBtn;
+	private JLabel timeLbl1;
+	private JLabel timeLbl2;
 	
 	private String projectPath;
 	private String videoPath;
 	private String currentVideo;
 	private boolean isHidden = false;
-
-	
+	private boolean previewIsFinished = true;
 	
 	public MediaPlayer(String projectPath) {
 		ac = new AudioConverter(projectPath);
@@ -83,6 +85,7 @@ public class MediaPlayer extends JFrame{
 		});
 		
 		mainSetUp();
+		vidOption = new VideoOptions(video);
 		
 		// Timer to update progress bar
 		int delay = 50;
@@ -94,6 +97,8 @@ public class MediaPlayer extends JFrame{
 					if (video.getTime() <= 250) {
 						video.mute(false);
 					}
+					timeLbl1.setText(vidOption.timeOfVid(video.getTime()));
+					timeLbl2.setText(vidOption.timeOfVid(video.getLength()));
 				}
 			}
 		};
@@ -151,10 +156,16 @@ public class MediaPlayer extends JFrame{
 		playButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				vidOption.playBtnFuntionality(video);
+				vidOption.playBtnFuntionality();
 				if (vidOption.getIsPlaying()) {
+					if (!vidOption.getPreviewIsFinished() && (projectPane.getPreviewPlayer() != null)) {
+						projectPane.playPreview();
+					}
 					playButton.setText("Pause");
 				} else {
+					if (!vidOption.getPreviewIsFinished() && (projectPane.getPreviewPlayer() != null)) {
+						projectPane.pausePreview();
+					}
 					playButton.setText("Play");
 				}
 			}
@@ -165,7 +176,7 @@ public class MediaPlayer extends JFrame{
 		rewindBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				vidOption.rewindBtnFunctionality(video);
+				vidOption.rewindBtnFunctionality();
 				if (vidOption.getIsPlaying()) {
 					playButton.setText("Pause");
 				} else {
@@ -179,7 +190,7 @@ public class MediaPlayer extends JFrame{
 		forwardBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				vidOption.forwardBtnFunctionality(video);
+				vidOption.forwardBtnFunctionality();
 				if (vidOption.getIsPlaying()) {
 					playButton.setText("Pause");
 				} else {
@@ -193,12 +204,12 @@ public class MediaPlayer extends JFrame{
 		stopBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				vidOption.stopBtnFunctionality(video);
-				if (vidOption.getIsPlaying()) {
-					playButton.setText("Pause");
-				} else {
-					playButton.setText("Play");
+				vidOption.stopBtnFunctionality();
+				if (projectPane.getPreviewPlayer() != null) {
+					projectPane.stopPreview();
+					vidOption.setPreviewIsFinished(false);
 				}
+				playButton.setText("Play");
 			}
 		});
 		
@@ -229,7 +240,7 @@ public class MediaPlayer extends JFrame{
 		muteBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean mutted = vidOption.muteBtnFunctionality(video);
+				boolean mutted = vidOption.muteBtnFunctionality();
 				if (!mutted) {
 					soundCtrl.setEnabled(false);
 					muteBtn.setText("Unmute");
@@ -247,7 +258,7 @@ public class MediaPlayer extends JFrame{
 				if (!isHidden) {
 					audioTabPane.setVisible(false);
 					projectPane.setVisible(false);
-					mainFrame.setResizable(true);
+					mainFrame.setResizable(false);
 					isHidden = true;
 					hideBtn.setText("Show");
 				}
@@ -294,7 +305,7 @@ public class MediaPlayer extends JFrame{
 	
 	//Project side panel
 	public void attachProjectPane() {
-		projectPane = new ProjectPane(projectPath,ac);
+		projectPane = new ProjectPane(projectPath,ac, vidOption, mainFrame);
 		mainPanel.add(projectPane, BorderLayout.EAST);
 	}
 	
@@ -332,10 +343,17 @@ public class MediaPlayer extends JFrame{
 
 		EmbeddedMediaPlayerComponent mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
+		video.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+			 @Override
+			 public void finished(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer) {
+				 vidOption.setIsPlaying(false);
+				 playButton.setText("Play");
+			 }
+		 });
 		
 		JPanel progressPane = new JPanel(new BorderLayout());
-		JLabel timeLbl1 = new JLabel("0:00");
-		JLabel timeLbl2 = new JLabel("0:00");
+		timeLbl1 = new JLabel("00:00");
+		timeLbl2 = new JLabel("00:00");
 		progressPane.add(timeLbl1, BorderLayout.WEST);
 		progressPane.add(progress, BorderLayout.CENTER);
 		progressPane.add(timeLbl2, BorderLayout.EAST);
@@ -344,5 +362,10 @@ public class MediaPlayer extends JFrame{
 		mediaPanel.add(progressPane, BorderLayout.SOUTH);
 		mainPanel.add(mediaPanel, BorderLayout.CENTER);
 	}
+	
+	public void setPlayButton() {
+		playButton.setText("Pause");
+	}
+	
 
 }
