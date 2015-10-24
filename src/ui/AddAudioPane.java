@@ -195,8 +195,10 @@ public class AddAudioPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+//				volume = soundCtrl.getValue();
 				audioPlayer.pause();
 				audioPlayer = new AudioPlayer(filePath, volume);
+				System.out.println(filePath);
 			}
 		});
 		
@@ -225,6 +227,7 @@ public class AddAudioPane extends JPanel{
 				sec = Integer.parseInt(seconds.getText());
 				
 				totalMilliSeconds = 0;
+				volume = soundCtrl.getValue();
 				
 				double v = ((double)volume)/50;
 				

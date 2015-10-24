@@ -24,6 +24,7 @@ public class AudioConverter {
 	private String outputMp3Name;
 	private String setVoice;
 	private String setPitch;
+	private String setPitchMethod = "(Parameter.set 'Int_Target_Method Int_Targets_Default)";
 	private String setSpeed;
 	private AddedAudio audioObject;
 	private HashMap<String, AddedAudio> addedAudioMap = new HashMap<String, AddedAudio>();
@@ -38,7 +39,7 @@ public class AudioConverter {
 		String textToSay = "(SayText \\\""+ text +"\\\")\"";
 		setFestivalOptions(voice, pitch, speed);
 		// Used to read out input text using festival
-		String cmd = "echo \"" + setVoice + " " + setPitch + " " + setSpeed + " " + textToSay + " | festival";
+		String cmd = "echo \"" + setVoice + " " + setPitch +" " + setPitchMethod + " " + setSpeed + " " + textToSay + " | festival";
 		System.out.println("" + cmd);
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
@@ -64,17 +65,17 @@ public class AudioConverter {
 		
 		switch (pitch) {
 		case "90Hz":
-			setPitch = "(set! duffint_params '((start 90) (end 75))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			setPitch = "(set! duffint_params '((start 90) (end 75))) (Parameter.set 'Int_Method 'DuffInt)";
 			break;
-		case "Default":
+		case "Default Hz":
 			//default pitch, do not set anything
-			setPitch = "";
+			setPitch = "(set! duffint_params '((start 105) (end 90))) (Parameter.set 'Int_Method 'DuffInt)";
 			break;
 		case "130Hz":
-			setPitch = "(set! duffint_params '((start 130) (end 115))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			setPitch = "(set! duffint_params '((start 130) (end 115))) (Parameter.set 'Int_Method 'DuffInt)";
 			break;
 		case "180Hz":
-			setPitch = "(set! duffint_params '((start 180) (end 150))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			setPitch = "(set! duffint_params '((start 180) (end 150))) (Parameter.set 'Int_Method 'DuffInt)";
 			break;
 		}
 		
@@ -87,7 +88,7 @@ public class AudioConverter {
 			break;
 		case "1.0x":
 			//default speed, no need to set
-			setSpeed = "";
+			setSpeed = "(Parameter.set 'Duration_Stretch 1.0)";
 			break;
 		case "1.2x":
 			setSpeed= "(Parameter.set 'Duration_Stretch 0.8)";
@@ -140,7 +141,7 @@ public class AudioConverter {
 		return isPreviewing;
 	}
 
-	public void convertToWav(String festivalText) {
+	public void convertToWav(String festivalText, String voice, String pitch, String speed) {
 		File f, g;
 		
 		while (true) {
@@ -160,9 +161,11 @@ public class AudioConverter {
 		}
 		mp3Path = mp3Path.replace(" ", "\\ ");
 		
+		setFestivalOptions(voice, pitch, speed);
+		
 		// Generates a wav file of the specified name, synthesizing the input
 		// string into speech
-		String cmd = "echo " + festivalText + "| text2wave -o " + mp3Path + ".wav";
+		String cmd = "echo \"" + festivalText + "\" | text2wave -o " + mp3Path + ".wav" + " -eval \"" + setVoice + "\" -eval \"" + setPitch + "\" -eval \"" + setPitchMethod + "\" -eval \"" + setSpeed + "\"";
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
 			Process process = builder.start();

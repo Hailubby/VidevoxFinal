@@ -23,6 +23,7 @@ public class ProjectPane extends JPanel{
 	private AudioConverter ac;
 	private String filePath;
 	private Object key;
+	private Boolean isAllSelected = false;
 	
 	ProjectPane(String projectPath, final AudioConverter ac) {
 		this.ac = ac;
@@ -37,7 +38,7 @@ public class ProjectPane extends JPanel{
 		final ProjectTableModel tableModel = new ProjectTableModel(ac.getAddedAudioMap());
 		audioListTable.setModel(tableModel);
 		final ListSelectionModel cellSelectionModel = audioListTable.getSelectionModel();
-		cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		cellSelectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		cellSelectionModel.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -74,8 +75,8 @@ public class ProjectPane extends JPanel{
 		JPanel btnPane2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel btnPane3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
-		JButton previewBtn = new JButton("Preview");
-		previewBtn.setPreferredSize(new Dimension(85, 25));
+		final JButton previewBtn = new JButton("Preview");
+		previewBtn.setPreferredSize(new Dimension(175, 25));
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -83,19 +84,29 @@ public class ProjectPane extends JPanel{
 			}
 		});
 		
-		JButton selectAllBtn = new JButton("Select All");
-		selectAllBtn.setPreferredSize(new Dimension(85, 25));
+//		JButton selectAllBtn = new JButton("Select All");
+//		selectAllBtn.setPreferredSize(new Dimension(85, 25));
+//		selectAllBtn.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				isAllSelected = true;
+//				audioListTable.selectAll();
+//				previewBtn.setEnabled(false);
+//			}
+//		});
 		btnPane1.add(previewBtn);
-		btnPane1.add(selectAllBtn);
+//		btnPane1.add(selectAllBtn);
 		
 		JButton dltBtn = new JButton("Delete");
 		dltBtn.setPreferredSize(new Dimension(175, 25));
 		dltBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableModel.removeAudio(key.toString());
-				ac.removeAudioFile(filePath);
-				tableModel.refresh();
+				if (audioListTable.getRowCount() > 0) {
+					tableModel.removeAudio(key.toString());
+					ac.removeAudioFile(filePath);
+					tableModel.refresh();
+				}
 			}
 		});
 		
@@ -110,7 +121,6 @@ public class ProjectPane extends JPanel{
 					int rows = audioListTable.getRowCount();
 					ac.mergeAudioToExport(rows, audioListTable);
 					ac.mergeVideo();
-					System.out.println("HI");
 				}
 			}
 		});

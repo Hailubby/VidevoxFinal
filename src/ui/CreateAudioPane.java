@@ -169,7 +169,11 @@ public class CreateAudioPane extends JPanel{
 		createBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ac.convertToWav(festivalTextBox.getText());
+				String text = festivalTextBox.getText();
+				String voiceChosen = voices.getSelectedItem().toString();
+				String pitchChosen = pitch.getSelectedItem().toString();
+				String speedChosen = speed.getSelectedItem().toString();
+				ac.convertToWav(text, voiceChosen, pitchChosen, speedChosen);
 				ac.wavToMp3();
 			}
 		});
