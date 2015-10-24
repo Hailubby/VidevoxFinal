@@ -21,7 +21,10 @@ public class AudioConverter {
 	private String mp3Name;
 	private String projectPath;
 	private String videoPath;
-	String outputMp3Name;
+	private String outputMp3Name;
+	private String setVoice;
+	private String setPitch;
+	private String setSpeed;
 	private AddedAudio audioObject;
 	private HashMap<String, AddedAudio> addedAudioMap = new HashMap<String, AddedAudio>();
 	private List<AudioConverterListener> listeners;
@@ -31,15 +34,64 @@ public class AudioConverter {
 		listeners = new ArrayList<AudioConverterListener>();
 	}
 	
-	public void convertToAudio(String text) {
+	public void convertToAudio(String text, String voice, String pitch, String speed) {
+		String textToSay = "(SayText \\\""+ text +"\\\")\"";
+		setFestivalOptions(voice, pitch, speed);
 		// Used to read out input text using festival
-		String cmd = "echo " + text + " |festival --tts";
+		String cmd = "echo \"" + setVoice + " " + setPitch + " " + setSpeed + " " + textToSay + " | festival";
+		System.out.println("" + cmd);
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
 			p = builder.start();
 			isPreviewing = true;
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void setFestivalOptions(String voice, String pitch, String speed) {
+		switch (voice) {
+		case "KAL":
+			setVoice = "(voice_kal_diphone)";
+			break;
+		case "RAB":
+			setVoice = "(voice_rab_diphone)";
+			break;
+		case "DON":
+			setVoice = "(voice_don_diphone)";
+			break;
+		}
+		
+		switch (pitch) {
+		case "90Hz":
+			setPitch = "(set! duffint_params '((start 90) (end 75))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			break;
+		case "Default":
+			//default pitch, do not set anything
+			setPitch = "";
+			break;
+		case "130Hz":
+			setPitch = "(set! duffint_params '((start 130) (end 115))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			break;
+		case "180Hz":
+			setPitch = "(set! duffint_params '((start 180) (end 150))) (Parameter.set 'Int_Method 'DuffInt) (Parameter.set 'Int_Target_Method Int_Targets_Default)";
+			break;
+		}
+		
+		switch(speed) {
+		case "0.5x":
+			setSpeed = "(Parameter.set 'Duration_Stretch 2.0)";
+			break;
+		case "0.75x":
+			setSpeed = "(Parameter.set 'Duration_Stretch 1.5)";
+			break;
+		case "1.0x":
+			//default speed, no need to set
+			setSpeed = "";
+			break;
+		case "1.2x":
+			setSpeed= "(Parameter.set 'Duration_Stretch 0.8)";
+			break;
 		}
 	}
 	
