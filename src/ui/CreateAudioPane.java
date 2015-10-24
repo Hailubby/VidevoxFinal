@@ -44,12 +44,13 @@ public class CreateAudioPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				String text = festivalTextBox.getText();
 				if (!ac.getIsPreviewing()) {
-					String text = festivalTextBox.getText();
 					ac.convertToAudio(text);
 				}
 				else {
 					ac.cancelPreview();
+					ac.convertToAudio(text);
 				}
 			}
 		});
