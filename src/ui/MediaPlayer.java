@@ -57,8 +57,8 @@ public class MediaPlayer extends JFrame{
 	private String projectPath;
 	private String videoPath;
 	private String currentVideo;
-	private boolean isHidden = false;
-	private boolean previewIsFinished = true;
+	private boolean isHidden = true;
+	private boolean vidSelected = false;
 	
 	public MediaPlayer(String projectPath) {
 		ac = new AudioConverter(projectPath);
@@ -91,7 +91,11 @@ public class MediaPlayer extends JFrame{
 		int delay = 50;
 		ActionListener updateSlider = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				if (vidOption.getIsVideo()) {
+				if (vidSelected) {
+					if (!isHidden) {
+						audioTabPane.setVisible(true);
+						projectPane.setVisible(true);
+					}
 					progress.setLength();
 					progress.updateSlider(video.getTime());
 					if (video.getTime() <= 250) {
@@ -99,6 +103,9 @@ public class MediaPlayer extends JFrame{
 					}
 					timeLbl1.setText(vidOption.timeOfVid(video.getTime()));
 					timeLbl2.setText(vidOption.timeOfVid(video.getLength()));
+				} else {
+					audioTabPane.setVisible(false);
+					projectPane.setVisible(false);
 				}
 			}
 		};
@@ -251,7 +258,7 @@ public class MediaPlayer extends JFrame{
 			}
 		});
 		
-		hideBtn = new JButton("Hide");
+		hideBtn = new JButton("Show");
 		hideBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -319,12 +326,17 @@ public class MediaPlayer extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FileChooser fc = new FileChooser(mainFrame, "VIDEO");
-				curVid.setText("" + fc.getFileName());
-				videoPath = fc.getPath();
-				ac.setVideoPath(videoPath);
-				vidOption.playNewVideo(videoPath, video, currentVideo, progress);
-				if (vidOption.getIsPlaying()) {
-					playButton.setText("Pause");
+				if (fc.getPath().isEmpty() || (fc.getPath() == null)) {
+					vidSelected = false;
+				}else {
+					curVid.setText("" + fc.getFileName());
+					videoPath = fc.getPath();
+					ac.setVideoPath(videoPath);
+					vidOption.playNewVideo(videoPath, video, currentVideo, progress);
+					vidSelected = true;
+					if (vidOption.getIsPlaying()) {
+						playButton.setText("Pause");
+					}
 				}
 			}
 		});

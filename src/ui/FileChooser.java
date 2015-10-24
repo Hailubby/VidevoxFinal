@@ -35,7 +35,7 @@ public class FileChooser {
 			fileName = fileChooser.getSelectedFile().getName();
 			//updateRecentPath(path);
 		} else if ( result == JFileChooser.CANCEL_OPTION) {
-		    return;
+		    path = "";
 		}
 	}
 	

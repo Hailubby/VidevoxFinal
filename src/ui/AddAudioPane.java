@@ -165,10 +165,13 @@ public class AddAudioPane extends JPanel{
 		JLabel strtLbl = new JLabel ("Start Time");
 		final JTextField minutes = new JTextField("00", JTextField.CENTER);
 		minutes.setPreferredSize(new Dimension(7,25));
+		minutes.setToolTipText("minutes");
 		final JTextField seconds = new JTextField("00", JTextField.CENTER);
 		seconds.setPreferredSize(new Dimension(7,25));
+		seconds.setToolTipText("seconds");
 		JLabel separator1 = new JLabel(":");
 		JButton curTimeBtn = new JButton("Current Time");
+		curTimeBtn.setToolTipText("Inserts the current time into the delay boxes");
 		curTimeBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
