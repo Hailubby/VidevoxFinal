@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileChooser {
-	private String path;
+	private String path = "";
 	private String fileName;
 	
 	public FileChooser(Container container, String fileType) {
@@ -35,7 +35,7 @@ public class FileChooser {
 			fileName = fileChooser.getSelectedFile().getName();
 			//updateRecentPath(path);
 		} else if ( result == JFileChooser.CANCEL_OPTION) {
-		    path = "";
+		    path = path;
 		}
 	}
 	

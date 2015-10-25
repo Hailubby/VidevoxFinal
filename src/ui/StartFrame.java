@@ -7,14 +7,18 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -34,11 +38,16 @@ public class StartFrame extends JFrame{
 	
 	private JTextField projectPathTxt;
 	private String projectPath;
+	private JRadioButton existingWrkSpace;
+	private JRadioButton newWrkSpace;
+	private JButton browseBtn1;
+	private JButton browseBtn2;
+	private ButtonGroup group = new ButtonGroup();
 	
 	StartFrame() {
 		setTitle("Select Workspace");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(530, 175);
+		setSize(555, 175);
 		setLocation(200,200);
 		getRootPane().setBorder(BorderFactory.createMatteBorder(0, 3, 0, 3, Color.WHITE));
 		
@@ -93,8 +102,8 @@ public class StartFrame extends JFrame{
 		projectPathTxt = new JTextField("");
 		projectPathTxt.setPreferredSize(new Dimension(290, 25));
 		
-		JButton browseBtn = new JButton("Browse");
-		browseBtn.addActionListener(new ActionListener() {
+		browseBtn1 = new JButton("Browse");
+		browseBtn1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				fc = new FileChooser(frame, "FOLDERS");
@@ -102,9 +111,24 @@ public class StartFrame extends JFrame{
 			}
 		});
 		
+		existingWrkSpace = new JRadioButton("", true);
+		group.add(existingWrkSpace);
+		existingWrkSpace.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				projectPathTxt.setEnabled(true);
+				browseBtn1.setEnabled(true);
+				workSpaceText.setEnabled(false);
+				browseBtn2.setEnabled(false);
+				projNameText.setEnabled(false);
+			}
+			
+		});
+		
 		existProjectPane.add(existingProject);
 		existProjectPane.add(projectPathTxt);
-		existProjectPane.add(browseBtn);
+		existProjectPane.add(browseBtn1);
+		existProjectPane.add(existingWrkSpace);
 		
 		mainPanel.add(existProjectPane, BorderLayout.NORTH);
 	}
@@ -122,23 +146,42 @@ public class StartFrame extends JFrame{
 		JLabel slctWrkSpcLbl = new JLabel("Select workspace: ");
 		workSpaceText = new JTextField("");
 		workSpaceText.setPreferredSize(new Dimension(314, 25));
+		workSpaceText.setEnabled(false);
 		
-		JButton browseBtn = new JButton("Browse");
-		browseBtn.addActionListener(new ActionListener() {
+		browseBtn2 = new JButton("Browse");
+		browseBtn2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				fc = new FileChooser(frame, "FOLDERS");
 				workSpaceText.setText(fc.getPath());
 			}
 		});
+		browseBtn2.setEnabled(false);
+		
+		newWrkSpace = new JRadioButton("", false);
+		group.add(newWrkSpace);
+		newWrkSpace.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				projectPathTxt.setEnabled(false);
+				browseBtn1.setEnabled(false);
+				workSpaceText.setEnabled(true);
+				browseBtn2.setEnabled(true);
+				projNameText.setEnabled(true);
+			}
+			
+		});
 		
 		midPane.add(slctWrkSpcLbl);
 		midPane.add(workSpaceText);
-		midPane.add(browseBtn);
+		midPane.add(browseBtn2);
+		midPane.add(newWrkSpace);
 		
 		JLabel projectNameLbl = new JLabel("Enter project name: ");
 		projNameText = new JTextField("");
 		projNameText.setPreferredSize(new Dimension(305, 25));
+		projNameText.setEnabled(false);
+		
 		botPane.add(projectNameLbl);
 		botPane.add(projNameText);
 		
@@ -157,21 +200,33 @@ public class StartFrame extends JFrame{
 		okBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!workSpaceText.getText().isEmpty()) {
+				if (newWrkSpace.isSelected()) {
 					projectFolder= new File("" + workSpaceText.getText()+ "/" + projNameText.getText());
 					videoFolder = new File("" + workSpaceText.getText()+ "/" + projNameText.getText() + "/Videos");
 					audioFolder = new File("" + workSpaceText.getText()+ "/" + projNameText.getText() + "/Audio");
-					projectAudioFolder = new File("" + workSpaceText.getText() + "/" + projNameText.getText() + "ProjectAudio");
+					projectAudioFolder = new File("" + workSpaceText.getText() + "/" + projNameText.getText() + "/ProjectAudio");
 					
 					projectFolder.mkdir();
 					videoFolder.mkdir();
 					audioFolder.mkdir();
-					projectFolder.mkdir();
+					projectAudioFolder.mkdir();
 					
 					projectPath = "" + workSpaceText.getText()+ "/" + projNameText.getText();
 				}
 				else {
 					projectPath = projectPathTxt.getText();
+					videoFolder = new File("" + projectPath + "/Videos");
+					audioFolder = new File("" + projectPath + "/Audio");
+					projectAudioFolder = new File("" + projectPath + "/ProjectAudio");
+					if(!videoFolder.exists()) {
+						videoFolder.mkdir();
+					}
+					if(!audioFolder.exists()) {
+						audioFolder.mkdir();
+					}
+					if(!projectAudioFolder.exists()) {
+						projectAudioFolder.mkdir();
+					}
 				}
 				
 				frame.dispose();
