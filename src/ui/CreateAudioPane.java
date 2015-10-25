@@ -21,6 +21,7 @@ import javax.swing.text.DefaultStyledDocument;
 
 import audio.AudioConverter;
 import ui.utils.DocumentLimit;
+import ui.utils.VideoOptions;
 
 
 public class CreateAudioPane extends JPanel{
@@ -34,7 +35,7 @@ public class CreateAudioPane extends JPanel{
 	private JComboBox<Object> pitch;
 	private JComboBox<Object> speed;
 	
-	CreateAudioPane(String projectPath, final AudioConverter ac) {
+	CreateAudioPane(String projectPath, final AudioConverter ac, final VideoOptions vidOption, final MediaPlayer mainFrame) {
 		this.projectPath = projectPath;
 		this.ac = ac;
 		
@@ -47,6 +48,10 @@ public class CreateAudioPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (vidOption.getIsPlaying()) {
+					vidOption.playBtnFuntionality();
+					mainFrame.setPlayButton("Play");
+				}
 				String text = festivalTextBox.getText();
 				String voiceChosen = voices.getSelectedItem().toString();
 				String pitchChosen = pitch.getSelectedItem().toString();

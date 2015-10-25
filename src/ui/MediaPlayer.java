@@ -50,7 +50,12 @@ public class MediaPlayer extends JFrame{
 	private ProjectPane projectPane;
 	private JTabbedPane audioTabPane;
 	private JButton playButton;
+	private JButton stopBtn;
+	private JButton rewindBtn;
+	private JButton forwardBtn;
 	private JButton hideBtn;
+	private JButton muteBtn;
+	private JSlider soundCtrl;
 	private JLabel timeLbl1;
 	private JLabel timeLbl2;
 	
@@ -103,9 +108,12 @@ public class MediaPlayer extends JFrame{
 					}
 					timeLbl1.setText(vidOption.timeOfVid(video.getTime()));
 					timeLbl2.setText(vidOption.timeOfVid(video.getLength()));
+					vidOptionsEnableDisable(true);
 				} else {
 					audioTabPane.setVisible(false);
 					projectPane.setVisible(false);
+					vidOptionsEnableDisable(false);
+					System.out.println("HEREHERHERE");
 				}
 			}
 		};
@@ -179,7 +187,7 @@ public class MediaPlayer extends JFrame{
 		});
 		
 		//Rewind button
-		JButton rewindBtn = new JButton("<<");
+		rewindBtn = new JButton("<<");
 		rewindBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -193,7 +201,7 @@ public class MediaPlayer extends JFrame{
 		});
 		
 		//fast forward button
-		JButton forwardBtn = new JButton(">>");
+		forwardBtn = new JButton(">>");
 		forwardBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -207,7 +215,7 @@ public class MediaPlayer extends JFrame{
 		});
 		
 		//stop button
-		JButton stopBtn = new JButton("Stop");
+		stopBtn = new JButton("Stop");
 		stopBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -231,7 +239,7 @@ public class MediaPlayer extends JFrame{
 	public void eastVideoControls() {
 
 		JLabel volumeLabel = new JLabel("Volume:");
-		final JSlider soundCtrl = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+		soundCtrl = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
 		soundCtrl.setMajorTickSpacing(25);
 		soundCtrl.setPaintTicks(true);
 
@@ -243,12 +251,12 @@ public class MediaPlayer extends JFrame{
 		};
 		soundCtrl.addChangeListener(l);
 		
-		final JButton muteBtn = new JButton("Mute");
+		muteBtn = new JButton("Mute");
 		muteBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean mutted = vidOption.muteBtnFunctionality();
-				if (!mutted) {
+				boolean muted = vidOption.muteBtnFunctionality();
+				if (!muted) {
 					soundCtrl.setEnabled(false);
 					muteBtn.setText("Unmute");
 				} else {
@@ -296,7 +304,7 @@ public class MediaPlayer extends JFrame{
 	//create south panel, this goes south of south panel
 	public void constructAudioPanels() {
 		audioTabPane = new JTabbedPane();
-		audioTabPane.add("Create Audio", new CreateAudioPane(projectPath, ac));
+		audioTabPane.add("Create Audio", new CreateAudioPane(projectPath, ac, vidOption, mainFrame));
 		audioTabPane.add("Add Audio", new AddAudioPane(projectPath, ac, vidOption, mainFrame));
 	}
 	
@@ -325,10 +333,12 @@ public class MediaPlayer extends JFrame{
 		slctVidBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (vidOption.getIsPlaying()) {
+					vidOption.playBtnFuntionality();
+					playButton.setText("Play");
+				}
 				FileChooser fc = new FileChooser(mainFrame, "VIDEO");
-				if (fc.getPath().isEmpty() || (fc.getPath() == null)) {
-					vidSelected = false;
-				}else {
+				if (!fc.getPath().isEmpty() && (fc.getPath() != null)) {
 					curVid.setText("" + fc.getFileName());
 					videoPath = fc.getPath();
 					ac.setVideoPath(videoPath);
@@ -375,12 +385,22 @@ public class MediaPlayer extends JFrame{
 		mainPanel.add(mediaPanel, BorderLayout.CENTER);
 	}
 	
-	public void setPlayButton() {
-		playButton.setText("Pause");
+	public void setPlayButton(String option) {
+		playButton.setText(option);
 	}
 	
 	public EmbeddedMediaPlayer getVideoPlayer() {
 		return video;
+	}
+	
+	private void vidOptionsEnableDisable(Boolean b) {
+		playButton.setEnabled(b);
+		stopBtn.setEnabled(b);
+		rewindBtn.setEnabled(b);
+		forwardBtn.setEnabled(b);
+		hideBtn.setEnabled(b);
+		muteBtn.setEnabled(b);
+		soundCtrl.setEnabled(b);
 	}
 
 }

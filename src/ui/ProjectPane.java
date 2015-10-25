@@ -90,7 +90,7 @@ public class ProjectPane extends JPanel{
 				vidOption.setPreviewIsFinished(false);
 				vidOption.stopBtnFunctionality();
 				vidOption.playBtnFuntionality();
-				mainFrame.setPlayButton();
+				mainFrame.setPlayButton("Pause");
 			}
 		});
 		
