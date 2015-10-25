@@ -8,11 +8,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
 
+import audio.AudioConverter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class Menu extends JMenuBar{
@@ -22,7 +24,7 @@ public class Menu extends JMenuBar{
 	private File projectAudioFolder;
 	private String projectPath;
 	
-	Menu (final MediaPlayer parent) {
+	Menu (final MediaPlayer parent, final AudioConverter ac) {
 		parent.setJMenuBar(this);
 		 JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		 ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
@@ -58,7 +60,14 @@ public class Menu extends JMenuBar{
 		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+				if (!ac.getIsExported()) {
+					int n = JOptionPane.showConfirmDialog( parent, "Your video has not been exported yet. Are you sure you want to exit?","Exit Option",JOptionPane.YES_NO_OPTION);
+					if (n == JOptionPane.YES_OPTION) {
+						System.exit(0);
+					}
+				} else {
+					System.exit(0);
+				}
 			}
 		});
 		

@@ -17,6 +17,7 @@ public class AudioConverter {
 	
 	private Process p;
 	private boolean isPreviewing = false;
+	private boolean isExported = true;
 	private String mp3Path;
 	private String mp3Name;
 	private String projectPath;
@@ -366,6 +367,14 @@ public class AudioConverter {
 
 	public void setVideoPath(String videoPath) {
 		this.videoPath = videoPath;
+	}
+	
+	public void setIsExported(Boolean b) {
+		isExported = b;
+	}
+	
+	public Boolean getIsExported() {
+		return isExported;
 	}
 
 }

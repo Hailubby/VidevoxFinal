@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -248,23 +249,30 @@ public class AddAudioPane extends JPanel{
 		addBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				min = Integer.parseInt(minutes.getText());
-				sec = Integer.parseInt(seconds.getText());
-				
-				totalMilliSeconds = 0;
-				volume = soundCtrl.getValue();
-				
-				double v = ((double)volume)/50;
-				
-				if((min == 0) && (sec == 0)) {
-					//create new audio file with selected volumed
-					ac.progAudioNoDelay(filePath, v);
-				}
-				else {
-					totalMilliSeconds += TimeUnit.MINUTES.toMillis((long)min);
-					totalMilliSeconds += TimeUnit.SECONDS.toMillis((long)sec);
-					
-					ac.progAudioWithDelay(totalMilliSeconds, filePath, v);
+				if ((audTxt.getText() != null) && !audTxt.getText().isEmpty()){
+					try {
+						min = Integer.parseInt(minutes.getText());
+						sec = Integer.parseInt(seconds.getText());
+						
+						totalMilliSeconds = 0;
+						volume = soundCtrl.getValue();
+						
+						double v = ((double)volume)/50;
+						
+						if((min == 0) && (sec == 0)) {
+							//create new audio file with selected volumed
+							ac.progAudioNoDelay(filePath, v);
+						}
+						else {
+							totalMilliSeconds += TimeUnit.MINUTES.toMillis((long)min);
+							totalMilliSeconds += TimeUnit.SECONDS.toMillis((long)sec);
+							
+							ac.progAudioWithDelay(totalMilliSeconds, filePath, v);
+						}
+						ac.setIsExported(false);
+					} catch(NumberFormatException e1) {
+						JOptionPane.showMessageDialog(mainFrame, "Invalid number format. It should be xx:xx where x is a number 0-9", "Error", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 
 			}

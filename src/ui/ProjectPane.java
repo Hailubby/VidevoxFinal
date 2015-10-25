@@ -85,12 +85,14 @@ public class ProjectPane extends JPanel{
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				previewPlayer.stop();
-				previewPlayer = new AudioPlayer(filePath, vidOption);
-				vidOption.setPreviewIsFinished(false);
-				vidOption.stopBtnFunctionality();
-				vidOption.playBtnFuntionality();
-				mainFrame.setPlayButton("Pause");
+				if (audioListTable.getRowCount() > 0 && (audioListTable.getSelectedRow() > -1)) {
+					previewPlayer.stop();
+					previewPlayer = new AudioPlayer(filePath, vidOption);
+					vidOption.setPreviewIsFinished(false);
+					vidOption.stopBtnFunctionality();
+					vidOption.playBtnFuntionality();
+					mainFrame.setPlayButton("Pause");
+				}
 			}
 		});
 		
@@ -99,9 +101,15 @@ public class ProjectPane extends JPanel{
 		selectAllBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				isAllSelected = true;
-				audioListTable.selectAll();
-				previewBtn.setEnabled(false);
+				if (audioListTable.getRowCount() > 0 && !isAllSelected) {
+					isAllSelected = true;
+					audioListTable.selectAll();
+					previewBtn.setEnabled(false);
+				} else if (audioListTable.getRowCount() > 0 && isAllSelected) {
+					isAllSelected = false;
+					audioListTable.clearSelection();
+					previewBtn.setEnabled(true);
+				}
 			}
 		});
 		btnPane1.add(previewBtn);
@@ -112,13 +120,18 @@ public class ProjectPane extends JPanel{
 		dltBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (audioListTable.getRowCount() > 0) {
+				if (audioListTable.getRowCount() > 0 && (audioListTable.getSelectedRow() > -1)) {
 					if (isAllSelected) {
 						rmvAllTableContent();
+						isAllSelected = false;
+						previewBtn.setEnabled(true);
 					} else {
 						tableModel.removeAudio(key.toString());
 						ac.removeAudioFile(filePath);
 						tableModel.refresh();
+						if (audioListTable.getRowCount() < 0) {
+							ac.setIsExported(true);
+						}
 					}
 				}
 			}
@@ -161,6 +174,7 @@ public class ProjectPane extends JPanel{
 			tableModel.removeAudio(key.toString());
 			ac.removeAudioFile(filePath);
 			tableModel.refresh();
+			ac.setIsExported(true);
 		}
 	}
 	
@@ -179,5 +193,6 @@ public class ProjectPane extends JPanel{
 	public AudioPlayer getPreviewPlayer() {
 		return previewPlayer;
 	}
+	
 
 }

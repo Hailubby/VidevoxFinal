@@ -77,7 +77,7 @@ public class MediaPlayer extends JFrame{
 		mainFrame = this;
 		mainFrame.setResizable(false);
 		progress = new ProgressSlider(this);
-		menuBar = new Menu(this);
+		menuBar = new Menu(this, ac);
 		this.projectPath = projectPath;
 		playButton = new JButton("Play");
 		
