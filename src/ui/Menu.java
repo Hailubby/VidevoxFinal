@@ -49,6 +49,13 @@ public class Menu extends JMenuBar{
 					}
 					if(!projectAudioFolder.exists()) {
 						projectAudioFolder.mkdir();
+					}else {
+						if (projectAudioFolder.list().length > 0) {
+							File[] files = projectAudioFolder.listFiles();
+							for(File file : files) {
+								file.delete();
+							}
+						}
 					}
 					parent.getVideoPlayer().stop();
 					parent.dispose();
