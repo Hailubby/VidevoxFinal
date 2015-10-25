@@ -36,6 +36,8 @@ public class AddAudioPane extends JPanel{
 	private int volume;
 	long totalMilliSeconds = 0;
 	private JTextField audTxt;
+	private JButton previewBtn;
+	private JButton stpBtn;
 	private String filePath;
 	private AudioPlayer audioPlayer = new AudioPlayer();
 	private int min;
@@ -45,7 +47,7 @@ public class AddAudioPane extends JPanel{
 	private AudioConverter ac;
 	
 	
-	AddAudioPane(String projectPath, final AudioConverter ac, VideoOptions vidOption, MediaPlayer mainFrame) {
+	AddAudioPane(String projectPath, final AudioConverter ac, final VideoOptions vidOption, final MediaPlayer mainFrame) {
 		this.ac = ac;
 		this.vidOption = vidOption;
 		this.mainFrame = mainFrame;
@@ -89,6 +91,8 @@ public class AddAudioPane extends JPanel{
 					Object key = audioTable.getValueAt(audioTable.getSelectedRow(), 0);
 					filePath = ((AudioTableModel)audioTable.getModel()).getFilePath(key.toString());	
 					audTxt.setText(filePath);
+					previewBtn.setEnabled(true);
+					stpBtn.setEnabled(true);
 				}
 			}
 		});
@@ -115,6 +119,8 @@ public class AddAudioPane extends JPanel{
 				filePath = fc.getPath();
 				if (!filePath.isEmpty()) {
 					audTxt.setText(filePath);
+					previewBtn.setEnabled(true);
+					stpBtn.setEnabled(true);
 					audioTable.clearSelection();
 				}
 			}
@@ -199,11 +205,15 @@ public class AddAudioPane extends JPanel{
 		
 		JPanel selAud2 = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		
-		JButton previewBtn = new JButton("Preview");
+		previewBtn = new JButton("Preview");
 		previewBtn.setPreferredSize(new Dimension(100, 25));
 		previewBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (vidOption.getIsPlaying()) {
+					vidOption.playBtnFuntionality();
+					mainFrame.setPlayButton("Play");
+				}
 				volume = soundCtrl.getValue();
 				audioPlayer.stop();
 				audioPlayer = new AudioPlayer(filePath);
@@ -215,8 +225,9 @@ public class AddAudioPane extends JPanel{
 				}
 			}
 		});
+		previewBtn.setEnabled(false);
 		
-		JButton stpBtn = new JButton("Stop");
+		stpBtn = new JButton("Stop");
 		stpBtn.setPreferredSize(new Dimension(100, 25));
 		stpBtn.addActionListener(new ActionListener() {
 			@Override
@@ -226,6 +237,7 @@ public class AddAudioPane extends JPanel{
 				}
 			}
 		});
+		stpBtn.setEnabled(false);
 		
 		selAud2.add(previewBtn);
 		selAud2.add(stpBtn);

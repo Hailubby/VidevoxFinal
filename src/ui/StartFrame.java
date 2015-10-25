@@ -203,7 +203,7 @@ public class StartFrame extends JFrame{
 				if (newWrkSpace.isSelected()) {
 					projectFolder= new File("" + workSpaceText.getText()+ "/" + projNameText.getText());
 					videoFolder = new File("" + workSpaceText.getText()+ "/" + projNameText.getText() + "/Videos");
-					audioFolder = new File("" + workSpaceText.getText()+ "/" + projNameText.getText() + "/Audio");
+					audioFolder = new File("" + workSpaceText.getText()+ "/" + projNameText.getText() + "/.Audio");
 					projectAudioFolder = new File("" + workSpaceText.getText() + "/" + projNameText.getText() + "/ProjectAudio");
 					
 					projectFolder.mkdir();
@@ -216,7 +216,7 @@ public class StartFrame extends JFrame{
 				else {
 					projectPath = projectPathTxt.getText();
 					videoFolder = new File("" + projectPath + "/Videos");
-					audioFolder = new File("" + projectPath + "/Audio");
+					audioFolder = new File("" + projectPath + "/.Audio");
 					projectAudioFolder = new File("" + projectPath + "/ProjectAudio");
 					if(!videoFolder.exists()) {
 						videoFolder.mkdir();

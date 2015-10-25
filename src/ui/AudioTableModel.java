@@ -42,7 +42,7 @@ public class AudioTableModel extends AbstractTableModel{
 	
 	private HashMap<String, String> loadFiles(String projectPath) {
 		HashMap<String, String> hm = new HashMap();
-		String directory = projectPath + "/Audio";
+		String directory = projectPath + "/.Audio";
 		File audioDir = new File(directory);
 		
 		if (audioDir.list().length > 0) {

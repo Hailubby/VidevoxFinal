@@ -145,7 +145,7 @@ public class AudioConverter {
 		
 		while (true) {
 			mp3Name = JOptionPane.showInputDialog("Please name the synthesized speech file");
-			mp3Path = projectPath+"/Audio/" + mp3Name;
+			mp3Path = projectPath+"/.Audio/" + mp3Name;
 
 			f = new File(mp3Path + ".mp3");
 			g = new File(mp3Path + ".wav");

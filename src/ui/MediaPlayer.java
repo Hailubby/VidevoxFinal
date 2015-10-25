@@ -250,6 +250,7 @@ public class MediaPlayer extends JFrame{
 			}
 		};
 		soundCtrl.addChangeListener(l);
+		soundCtrl.setEnabled(false);
 		
 		muteBtn = new JButton("Mute");
 		muteBtn.addActionListener(new ActionListener() {
@@ -347,6 +348,7 @@ public class MediaPlayer extends JFrame{
 					if (vidOption.getIsPlaying()) {
 						playButton.setText("Pause");
 					}
+					soundCtrl.setEnabled(true);
 				}
 			}
 		});
@@ -400,7 +402,6 @@ public class MediaPlayer extends JFrame{
 		forwardBtn.setEnabled(b);
 		hideBtn.setEnabled(b);
 		muteBtn.setEnabled(b);
-		soundCtrl.setEnabled(b);
 	}
 
 }
