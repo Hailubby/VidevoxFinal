@@ -226,13 +226,19 @@ public class StartFrame extends JFrame{
 					}
 					if(!projectAudioFolder.exists()) {
 						projectAudioFolder.mkdir();
+					}else {
+						if (projectAudioFolder.list().length > 0) {
+							File[] files = projectAudioFolder.listFiles();
+							for(File file : files) {
+								file.delete();
+							}
+						}
 					}
-				}
 				
 				frame.dispose();
 				new MediaPlayer(projectPath);
 			}
-		});
+		}});
 		
 		JButton cnclBtn = new JButton("Cancel");
 		cnclBtn.setPreferredSize(new Dimension(75, 25));
