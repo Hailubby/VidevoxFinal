@@ -22,6 +22,8 @@ public class AudioConverter {
 	private String projectPath;
 	private String videoPath;
 	private String outputMp3Name;
+	private String outputVidPath;
+	private String outputVidName;
 	private String setVoice;
 	private String setPitch;
 	private String setPitchMethod = "(Parameter.set 'Int_Target_Method Int_Targets_Default)";
@@ -140,40 +142,55 @@ public class AudioConverter {
 		return isPreviewing;
 	}
 
-	public void convertToWav(String festivalText, String voice, String pitch, String speed) {
+	public Boolean convertToWav(String festivalText, String voice, String pitch, String speed) {
 		File f, g;
 		
 		while (true) {
 			mp3Name = JOptionPane.showInputDialog("Please name the synthesized speech file");
-			mp3Path = projectPath+"/.Audio/" + mp3Name;
-
-			f = new File(mp3Path + ".mp3");
-			g = new File(mp3Path + ".wav");
-			if (f.exists() || g.exists()) {
-				JOptionPane.showMessageDialog(null,"This file already exists.");
-			} else if (mp3Path.trim().length() == 0 || mp3Path == null) {
-				JOptionPane.showMessageDialog(null,"The name field was left blank.");
-
+			if (mp3Name == null) {
+				return false;
 			} else {
-				break;
+				if(mp3Name.endsWith(".mp3")) {
+					mp3Name = mp3Name.substring(0, mp3Name.indexOf("."));
+				}
+				mp3Path = projectPath+"/.Audio/" + mp3Name;
+	
+				f = new File(mp3Path + ".mp3");
+				g = new File(mp3Path + ".wav");
+				if (f.exists() || g.exists()) {
+					JOptionPane.showMessageDialog(null,"This file already exists.");
+				} else if (mp3Name.trim().length() == 0 || mp3Name == null) {
+					JOptionPane.showMessageDialog(null,"The name field was left blank.");
+	
+				} else {
+					break;
+				}
+				mp3Path = mp3Path.replace(" ", "\\ ");
 			}
 		}
-		mp3Path = mp3Path.replace(" ", "\\ ");
 		
-		setFestivalOptions(voice, pitch, speed);
-		
-		// Generates a wav file of the specified name, synthesizing the input
-		// string into speech
-		String cmd = "echo \"" + festivalText + "\" | text2wave -o " + mp3Path + ".wav" + " -eval \"" + setVoice + "\" -eval \"" + setPitch + "\" -eval \"" + setPitchMethod + "\" -eval \"" + setSpeed + "\"";
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-		try {
-			Process process = builder.start();
-			process.waitFor();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if((mp3Name != null) && !mp3Name.isEmpty()) {
+			setFestivalOptions(voice, pitch, speed);
+			
+			// Generates a wav file of the specified name, synthesizing the input
+			// string into speech
+			String cmd = "echo \"" + festivalText + "\" | text2wave -o " + mp3Path + ".wav" + " -eval \"" + setVoice + "\" -eval \"" + setPitch + "\" -eval \"" + setPitchMethod + "\" -eval \"" + setSpeed + "\"";
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			try {
+				Process process = builder.start();
+				process.waitFor();
+				if (process.exitValue() == 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		return false;
 		
 	}
 	
@@ -256,35 +273,68 @@ public class AudioConverter {
 		}
 	}
 	
-	public void mergeAudioToExport(int rows, JTable audioListTable) {
+	public boolean mergeAudioToExport(int rows, JTable audioListTable) {
 		String inputListToMix = "";
 		String key;
 		String tempPath;
 		
-		for(int i = 0; i < rows; i++) {
-			key = audioListTable.getValueAt(i, 0).toString();
-			tempPath = addedAudioMap.get(key).getAudioPath();
-			inputListToMix = inputListToMix + " -i " + tempPath;
+		File f;
+		
+		while (true) {
+			outputVidName = JOptionPane.showInputDialog("Please name the output video file");
+			if (outputVidName == null) {
+				return false;
+			} 
+			else {
+				if(outputVidName.endsWith("avi")) {
+					outputVidName = outputVidName.substring(0, outputVidName.indexOf("."));
+				}
+				outputVidPath = projectPath+"/Videos/" + outputVidName;
+	
+				f = new File(outputVidPath + ".avi");
+				if (f.exists()) {
+					JOptionPane.showMessageDialog(null,"This file already exists.");
+				} else if (outputVidName.trim().length() == 0 || outputVidName == null) {
+					JOptionPane.showMessageDialog(null,"The name field was left blank.");
+				} else {
+					break;
+				}
+				outputVidPath = outputVidPath.replace(" ", "\\ ");
+			}
 		}
 		
-		String cmd = "ffmpeg" + inputListToMix + " -filter_complex amix=inputs=" + rows + " " + projectPath+"/Videos/temp.mp3";
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-		try {
-			Process process = builder.start();
-			process.waitFor();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if((outputVidName != null) && !outputVidName.isEmpty()) {
+			for(int i = 0; i < rows; i++) {
+				key = audioListTable.getValueAt(i, 0).toString();
+				tempPath = addedAudioMap.get(key).getAudioPath();
+				inputListToMix = inputListToMix + " -i " + tempPath;
+			}
+			
+			String cmd = "ffmpeg" + inputListToMix + " -filter_complex amix=inputs=" + rows + " " + projectPath+"/Videos/temp.mp3";
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			try {
+				Process process = builder.start();
+				process.waitFor();
+				if (process.exitValue() == 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		return false;
 	}
 	
 	public void mergeVideo() {
 		String cmd = "ffmpeg -i " + videoPath + " -i " + projectPath+"/Videos/temp.mp3"
 				+" -filter_complex \"[1:a]apad[audio] ; [audio][0:a]amerge[aout]\" -map 0:v -map \"[aout]\" -c:v copy "
-				+ projectPath+"/Videos/output.avi";
+				+ outputVidPath+".avi";
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		try {
 			Process process = builder.start();

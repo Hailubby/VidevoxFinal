@@ -178,8 +178,10 @@ public class CreateAudioPane extends JPanel{
 				String voiceChosen = voices.getSelectedItem().toString();
 				String pitchChosen = pitch.getSelectedItem().toString();
 				String speedChosen = speed.getSelectedItem().toString();
-				ac.convertToWav(text, voiceChosen, pitchChosen, speedChosen);
-				ac.wavToMp3();
+				Boolean successful = ac.convertToWav(text, voiceChosen, pitchChosen, speedChosen);
+				if (successful) {
+					ac.wavToMp3();
+				}
 			}
 		});
 		

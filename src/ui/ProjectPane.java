@@ -133,9 +133,11 @@ public class ProjectPane extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				if (audioListTable.getRowCount() > 0) {
 					int rows = audioListTable.getRowCount();
-					ac.mergeAudioToExport(rows, audioListTable);
-					ac.mergeVideo();
-					rmvAllTableContent();
+					Boolean successful = ac.mergeAudioToExport(rows, audioListTable);
+					if (successful) {
+						ac.mergeVideo();
+						rmvAllTableContent();
+					}
 				}
 			}
 		});

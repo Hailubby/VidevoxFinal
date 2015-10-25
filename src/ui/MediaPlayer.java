@@ -113,7 +113,6 @@ public class MediaPlayer extends JFrame{
 					audioTabPane.setVisible(false);
 					projectPane.setVisible(false);
 					vidOptionsEnableDisable(false);
-					System.out.println("HEREHERHERE");
 				}
 			}
 		};

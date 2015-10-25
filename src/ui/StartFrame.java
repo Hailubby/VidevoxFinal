@@ -236,6 +236,12 @@ public class StartFrame extends JFrame{
 		
 		JButton cnclBtn = new JButton("Cancel");
 		cnclBtn.setPreferredSize(new Dimension(75, 25));
+		cnclBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+			}
+		});
 		
 		btnPane.add(okBtn);
 		btnPane.add(cnclBtn);
