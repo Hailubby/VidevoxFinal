@@ -14,6 +14,6 @@ Required Libraries are stored in the jar file and additionally provided external
   * Previewing audio is not compatible with Fast Forward and Rewind, please finalize the export to make full use of player functionality.
 
 
-NOTE
--Please run on Ubuntu
--Found issue where initial window is too small so options are cut off, please expand vertically to see the option
+NOTE  
+-Please run on Ubuntu   
+-Found issue where initial window is too small so options are cut off, please expand vertically to see the option  
