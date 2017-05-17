@@ -12,3 +12,8 @@ Required Libraries are stored in the jar file and additionally provided external
 1. Press the **Select Video** button before doing anything else to select and autoplay a video
 2. Only one audio file can be previewed with the video at one time from the project pane 
   * Previewing audio is not compatible with Fast Forward and Rewind, please finalize the export to make full use of player functionality.
+
+
+NOTE
+-Please run on Ubuntu
+-Found issue where initial window is too small so options are cut off, please expand vertically to see the option
